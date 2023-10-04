@@ -1,0 +1,15 @@
+.signup-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+
+.form-control{
+  max-width: 10rem;
+  margin:auto;
+}
+
+.signup-form-wrapper{
+  text-align: center;
+}

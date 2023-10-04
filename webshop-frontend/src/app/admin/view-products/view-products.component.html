@@ -1,0 +1,42 @@
+<input [(ngModel)]="descriptionWordCount" type="range">
+<span>{{ descriptionWordCount }}</span>
+
+<br><br>
+<input [(ngModel)]="searchedProduct" (ngModelChange)="onFilterProducts()" type="text">
+<br><br>
+
+<div class="">
+  <h2 class="mb-4">Products</h2>
+  <table class="table table-hover table-bordered table-sortable">
+    <thead>
+    <tr>
+      <th scope="col">Pilt</th>
+      <th scope="col">Nimetus</th>
+      <th scope="col">Hind</th>
+      <th scope="col">Kategooria</th>
+      <th scope="col">Kirjeldus</th>
+      <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+<tr *ngFor="let product of products" [ngClass]="{'active': product.active, 'inactive': !product.active}">
+    <td (click)="onChangeProductActive(product)"><img class="product-img" src="{{product.image}}" alt=""></td>
+    <td (click)="onChangeProductActive(product)">{{product.name}}</td>
+    <td (click)="onChangeProductActive(product)">{{product.price | thousandSeparator}}</td>
+    <td (click)="onChangeProductActive(product)">{{product.category?.name}}</td>
+    <td (click)="onChangeProductActive(product)">{{product.description | descriptionShortener:descriptionWordCount}}</td>
+  <button routerLink="/admin/muuda/{{product.id}}">Muuda toodet</button>
+  <button (click)="onDeleteProduct(product)">Kustuta</button>
+
+  <div class="input-group mb-3">
+  <button (click)="onReload()" class="btn-primary">Muuda kogust</button>
+    <span (click)="onIncreaseStock(product)" class="input-group-text">+</span>
+    <input type="text" class="form-control" value={{product.stock}}>
+    <span (click)="onDecreaseStock(product)" class="input-group-text">-</span>
+  </div>
+
+</tr>
+
+</tbody>
+</table>
+</div>

@@ -1,0 +1,28 @@
+
+
+/* You can add global styles to this file, and also import other style files */
+
+
+.bg-light {
+  background-color: rgb(244, 244, 252) !important;
+}
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.center {
+  text-align: center;
+}
+
+
+
+.responsive-image-20 {
+  max-width: 20%;
+  height: auto
+}
+
+.responsive-image-80 {
+  max-width: 80%;
+  height: 100%;
+}

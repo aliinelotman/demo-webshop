@@ -1,0 +1,26 @@
+<button
+class="cart-top btn btn-primary"
+*ngIf="cartProducts.length > 0" (click)="onEmptyCart()">Tühjenda</button>
+
+<div *ngFor="let cProduct of cartProducts">
+    <app-cart-product
+        [cartProduct]="cProduct"
+        (decreaseQuantityEvent)="onDecreaseQuantity($event)"
+        (increaseQuantityEvent)="onIncreaseQuantity($event)"
+        (removeFromCartEvent)="onRemoveProduct($event)"
+        class="cart-item"
+        ></app-cart-product>
+</div>
+
+<div class="cart-bottom">
+    <div *ngIf="cartProducts.length > 0">KOKKU: {{sumOfCart}} €</div>
+
+        <app-parcel-machines
+            [cartProducts]="cartProducts"
+            (calculateSumEvent)="calculateSumOfCart()"
+            (removeParcelMachineEvent)="onRemoveProduct($event)"></app-parcel-machines>
+
+        <br>
+
+        <button class="btn btn-success" (click)="onPay()">Maksma</button>
+</div>

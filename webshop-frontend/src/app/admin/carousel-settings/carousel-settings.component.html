@@ -1,0 +1,11 @@
+<form (ngSubmit)="onSubmit(addCarouselPicForm)" #addCarouselPicForm="ngForm">
+  <label>Avalehe karusell galerii pildi URL</label> <br>
+  <input ngModel name="imgName" type="text" required> <br>
+  <button [disabled]="addCarouselPicForm.invalid">SISESTA</button> <br>
+</form>
+
+<br><br>
+
+<div *ngFor="let image of images">
+  {{image.id}} - {{image.url}} <button (click)="onDeleteImg(image)">X</button>
+</div>

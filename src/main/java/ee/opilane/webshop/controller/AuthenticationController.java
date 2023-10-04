@@ -1,0 +1,77 @@
+package ee.opilane.webshop.controller;
+
+
+import ee.opilane.webshop.controller.exceptions.FailedException;
+import ee.opilane.webshop.model.database.Person;
+import ee.opilane.webshop.model.request.LoginData;
+import ee.opilane.webshop.model.request.Token;
+import ee.opilane.webshop.repository.PersonRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+@RestController
+public class AuthenticationController {
+
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    PersonRepository personRepository;
+
+    // localhost:8080/signup    POST
+    @PostMapping("signup")
+    public ResponseEntity<List<Person>> addPerson(@RequestBody Person person) {
+        if (person.getPersonalCode() == null || personRepository.findById(person.getPersonalCode()).isEmpty()) {
+//            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String hashedPassword = passwordEncoder.encode(person.getPassword());
+            person.setPassword(hashedPassword);
+            personRepository.save(person);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(personRepository.findAll());
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<Token> login(@RequestBody LoginData loginData) throws FailedException {
+//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        Person person = personRepository.findPersonByEmail(loginData.getEmail());
+
+        if (person == null) {
+            throw new FailedException("Username not valid " + loginData.getEmail());
+        }
+
+        if (!passwordEncoder.matches(loginData.getPassword(), person.getPassword())) {
+            throw new FailedException("Password not valid " + loginData.getEmail());
+        }
+
+        Token token = new Token();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneHourLater = now.plusHours(1);
+        Date dateOneHourLater = java.util.Date.from(oneHourLater.atZone(java.time.ZoneId.systemDefault()).toInstant());
+
+        String jwtsToken = Jwts.builder()
+                .signWith(SignatureAlgorithm.HS512, "super-secret-key")
+                .setExpiration(dateOneHourLater)
+                .setIssuer("mihkel-webshop")
+                .setSubject(person.getPersonalCode())
+                .setId(person.isAdmin() ? "admin" : "")
+                .compact();
+
+        token.setToken(jwtsToken);
+
+        return ResponseEntity.ok().body(token);
+    }
+
+}
